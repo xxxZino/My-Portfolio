@@ -45,19 +45,31 @@ const ScrollToTop = () => {
   );
 };
 
-const Section = ({ id, title, children }: { id: string; title: string; children: React.ReactNode }) => (
+const Section = ({
+  id,
+  title,
+  action,
+  children,
+}: {
+  id: string;
+  title: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+}) => (
   <section id={id} className="py-20 sm:py-28 scroll-mt-24" aria-labelledby={`${id}-title`}>
     <div className="mx-auto max-w-6xl px-4">
-      <div className="mb-10 flex items-end justify-between gap-4">
+      <div className="mb-4 flex items-end justify-between gap-4">
         <h2 id={`${id}-title`} className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white font-['Inter',ui-sans-serif]">
           {title}
         </h2>
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent dark:via-emerald-600/50" />
+        {action ? <div className="shrink-0">{action}</div> : null}
       </div>
+      <div className="h-px mb-8 bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent dark:via-emerald-600/50" />
       {children}
     </div>
   </section>
 );
+
 
 const Badge = ({ children }: { children: React.ReactNode }) => (
   <span className="inline-flex items-center rounded-full border border-slate-200/70 px-3 py-1 text-xs font-medium text-slate-700 dark:text-slate-200 dark:border-slate-700/80 bg-white/70 dark:bg-slate-900/60 backdrop-blur-sm ring-1 ring-inset ring-emerald-500/10">
@@ -77,13 +89,40 @@ export type Project = { title: string; desc: string; tech: string[]; img: string
 
 const projects: Project[] = [
   {
+    title: "Client Work – Personal Portfolio ",
+    desc: "A modern portfolio website built with Next.js and TailwindCSS, designed to look smooth, elegant, and full of clean animations.",
+    tech: ["Next.js", "TailwindCSS", "Type Script", "React"],
+    img: "/portrangga.png",
+    demo: "https://rangga-portfolio-sigma.vercel.app/",
+    repo: "https://github.com/xxxZino/Job-Recommender",
+  },
+  {
+    title: "Client Work – Personal Portfolio",
+    desc: "A responsive portfolio website powered by Next.js and TailwindCSS with a focus on modern design and performance.",
+    tech: ["Next.js", "TailwindCSS", "Type Script", "React"],
+    img: "/Preview.png",
+    demo: "https://sj-portofolio.vercel.app/",
+    repo: "https://github.com/xxxZino/Job-Recommender",
+  },
+    {
+    title: "Client Work – Company Profile",
+    desc: "A modern company profile system built with Next.js and TailwindCSS, designed to be dynamic and reliable.",
+    tech: ["Python", "Streamlit", "SBERT", "Cosine Similarity", "React"],
+    img: "/jambuku.png",
+    demo: "https://jambuku.vercel.app/",
+    repo: "https://github.com/xxxZino/Job-Recommender",
+  },
+
+  {
     title: "Job Candidate Recommender",
     desc: "NLP system to match candidates with vacancies using Sentence-BERT and Cosine similarity.",
     tech: ["Python", "Streamlit", "SBERT", "Cosine Similarity"],
-    img: "/recsystem.png",
+    img: "/recsystem1.png",
     demo: "#",
     repo: "https://github.com/xxxZino/Job-Recommender",
   },
+
+  
 ];
 
 // Logos via devicon CDN (ringan & stabil)
@@ -114,16 +153,189 @@ const experiences = [
       "Collaborated with the team to integrate APIs and develop scalable features.",
     ],
   },
-  {
-    role: "Research Assistant (NLP)",
-    org: "Universitas AMIKOM Yogyakarta",
-    time: "2024 – 2025",
-    bullets: [
-      "Develop job-candidate recommender using Sentence-BERT and cosine similarity.",
-      "Designed evaluation dashboards and automated preprocessing pipeline.",
-    ],
-  },
 ] as const;
+
+// PROJECT CAROUSEL
+const ProjectsCarousel: React.FC<{
+  projects: {
+    title: string;
+    desc: string;
+    tech: string[];
+    img: string;
+    demo: string;
+    repo: string;
+  }[];
+}> = ({ projects }) => {
+  const trackRef = React.useRef<HTMLDivElement>(null);
+  const [active, setActive] = React.useState(0);
+  const rafRef = React.useRef<number | null>(null);
+
+  // Scroll helper: ke index tertentu
+  const scrollToIndex = React.useCallback((idx: number) => {
+    const el = trackRef.current;
+    if (!el) return;
+    const items = Array.from(el.children) as HTMLElement[];
+    const item = items[Math.max(0, Math.min(idx, items.length - 1))];
+    if (!item) return;
+    const offset = item.offsetLeft - parseInt(getComputedStyle(el).paddingLeft || "0", 10);
+    el.scrollTo({ left: offset, behavior: "smooth" });
+  }, []);
+
+  // Tombol prev/next
+  const scrollByAmount = (dir: "prev" | "next") => {
+    const next = dir === "next" ? active + 1 : active - 1;
+    scrollToIndex(next);
+  };
+
+  // Hitung slide aktif berdasarkan elemen paling dekat ke tengah viewport track
+  const recalcActive = React.useCallback(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const center = el.getBoundingClientRect().left + el.clientWidth / 2;
+    const items = Array.from(el.children) as HTMLElement[];
+    let nearest = 0;
+    let best = Number.POSITIVE_INFINITY;
+    items.forEach((it, i) => {
+      const rect = it.getBoundingClientRect();
+      const itCenter = rect.left + rect.width / 2;
+      const dist = Math.abs(itCenter - center);
+      if (dist < best) {
+        best = dist;
+        nearest = i;
+      }
+    });
+    setActive(nearest);
+  }, []);
+
+  // Scroll handler (throttled via rAF)
+  const onScroll = () => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(recalcActive);
+  };
+
+  // Recalc saat resize
+  React.useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    recalcActive();
+    const ro = new ResizeObserver(recalcActive);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [recalcActive]);
+
+  // Keyboard ← → untuk navigasi
+  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      scrollByAmount("next");
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      scrollByAmount("prev");
+    }
+  };
+
+  return (
+    <div className="relative">
+      {/* track scroll-snap */}
+      <div
+        ref={trackRef}
+        role="listbox"
+        aria-label="Daftar proyek"
+        tabIndex={0}
+        onKeyDown={onKeyDown}
+        onScroll={onScroll}
+        className="
+          flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2
+          px-1
+          focus:outline-none focus:ring-2 focus:ring-emerald-400/60 rounded-xl
+          [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
+        "
+      >
+        {projects.map((p, i) => (
+          <motion.article
+            role="option"
+            aria-selected={active === i}
+            key={p.title}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5, delay: i * 0.05 }}
+            className="
+              snap-start shrink-0
+              w-[88%] sm:w-[64%] md:w-[55%] lg:w-[46%] xl:w-[34%]
+            "
+          >
+            <Card>
+              <a href={p.demo} target="_blank" rel="noreferrer" className="block">
+                <div className="overflow-hidden rounded-xl">
+                  <img
+                    src={p.img}
+                    alt={`${p.title} screenshot`}
+                    loading="lazy"
+                    className="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  />
+                </div>
+                <div className="mt-4 flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-lg font-semibold leading-snug">{p.title}</h3>
+                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{p.desc}</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {p.tech.map((t) => (
+                        <Badge key={t}>{t}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <ExternalLink className="h-5 w-5 shrink-0 opacity-80 text-emerald-500" />
+                </div>
+              </a>
+              <div className="mt-4 flex items-center gap-3">
+                <a href={p.demo} target="_blank" rel="noreferrer" className="text-sm underline-offset-4 hover:underline decoration-emerald-500">
+                  Live Demo
+                </a>
+                <a href={p.repo} target="_blank" rel="noreferrer" className="text-sm underline-offset-4 hover:underline decoration-emerald-500">
+                  GitHub
+                </a>
+              </div>
+            </Card>
+          </motion.article>
+        ))}
+      </div>
+
+      {/* tombol prev/next */}
+      <div className="mt-4 flex items-center justify-center gap-3">
+        <button
+          onClick={() => scrollByAmount("prev")}
+          className="rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+        >
+          Prev
+        </button>
+        <button
+          onClick={() => scrollByAmount("next")}
+          className="rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+        >
+          Next
+        </button>
+      </div>
+
+      {/* dot indicators */}
+      <div className="mt-3 flex justify-center gap-2">
+        {projects.map((_, i) => (
+          <button
+            key={i}
+            aria-label={`Slide ${i + 1}`}
+            onClick={() => scrollToIndex(i)}
+            className={[
+              "h-2.5 rounded-full transition-all",
+              active === i ? "w-6 bg-emerald-500" : "w-2.5 bg-slate-300 dark:bg-slate-700",
+            ].join(" ")}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+
 
 // ---------- Component ----------
 export default function Portfolio() {
@@ -148,6 +360,10 @@ export default function Portfolio() {
     if (isDark) root.classList.add("dark");
     else root.classList.remove("dark");
   }, [isDark]);
+
+  // Slider
+  const [showAllProjects, setShowAllProjects] = React.useState(false);
+
 
   // Smooth scroll + active section highlight
   const navIds = React.useMemo(() => ["projects", "case-studies", "skills", "services", "experience", "contact"], []);
@@ -201,6 +417,7 @@ export default function Portfolio() {
     const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
     window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
   };
+
 
   return (
     <div className="min-h-screen scroll-smooth bg-gradient-to-b from-slate-50 via-white to-slate-50 text-slate-900 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950 dark:text-slate-100 selection:bg-emerald-600 selection:text-white font-['Inter',ui-sans-serif]">
@@ -342,7 +559,7 @@ export default function Portfolio() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.05 }}
               >
-                Crafting modern, scalable, and user-friendly digital solutions.
+                Crafting modern, scalable, and user friendly digital solutions.
               </motion.h1>
               <motion.p
                 className="mt-4 text-slate-600 dark:text-slate-300 max-w-prose"
@@ -409,8 +626,8 @@ export default function Portfolio() {
       <div className="mx-auto max-w-6xl px-4 -mt-8 sm:-mt-10">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { k: "Projects", v: "1+" },
-            { k: "Satisfied Clients", v: "—" },
+            { k: "Projects", v: "4+" },
+            { k: "Satisfied Clients", v: "3" },
             { k: "Avg. LCP", v: "<2.0s" },
             { k: "Stack", v: "React/TS" },
           ].map((s, i) => (
@@ -430,62 +647,68 @@ export default function Portfolio() {
       </div>
 
       {/* Projects */}
-      <Section id="projects" title="Featured Projects">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((p, i) => (
-            <motion.article
-              key={p.title}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: i * 0.05 }}
-            >
-              <Card>
-                <a href={p.demo} target="_blank" rel="noreferrer" className="block">
-                  <div className="overflow-hidden rounded-xl">
-                    <img
-                      src={p.img}
-                      alt={`${p.title} screenshot`}
-                      loading="lazy"
-                      className="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                    />
+   <Section
+  id="projects"
+  title="Featured Projects"
+  action={
+    <button
+      onClick={() => setShowAllProjects(true)}
+      className="rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+    >
+      See all
+    </button>
+  }
+>
+  <ProjectsCarousel projects={projects} />
+</Section>
+
+{/* Modal Semua Project */}
+{showAllProjects && (
+  <div className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm grid place-items-center px-4" role="dialog" aria-modal="true">
+    <div className="max-w-6xl w-full max-h-[85vh] overflow-y-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 sm:p-6">
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="text-lg font-semibold">All Projects</h3>
+        <button
+          onClick={() => setShowAllProjects(false)}
+          className="rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+        >
+          Tutup
+        </button>
+      </div>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {projects.map((p) => (
+          <Card key={p.title}>
+            <a href={p.demo} target="_blank" rel="noreferrer" className="block">
+              <div className="overflow-hidden rounded-xl">
+                <img
+                  src={p.img}
+                  alt={`${p.title} screenshot`}
+                  loading="lazy"
+                  className="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                />
+              </div>
+              <div className="mt-4 flex items-start justify-between gap-3">
+                <div>
+                  <h4 className="font-semibold leading-snug">{p.title}</h4>
+                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{p.desc}</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {p.tech.map((t) => <Badge key={t}>{t}</Badge>)}
                   </div>
-                  <div className="mt-4 flex items-start justify-between gap-3">
-                    <div>
-                      <h3 className="text-lg font-semibold leading-snug">{p.title}</h3>
-                      <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{p.desc}</p>
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {p.tech.map((t) => (
-                          <Badge key={t}>{t}</Badge>
-                        ))}
-                      </div>
-                    </div>
-                    <ExternalLink className="h-5 w-5 shrink-0 opacity-80 text-emerald-500" />
-                  </div>
-                </a>
-                <div className="mt-4 flex items-center gap-3">
-                  <a
-                    href={p.demo}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-sm underline-offset-4 hover:underline decoration-emerald-500"
-                  >
-                    Live Demo
-                  </a>
-                  <a
-                    href={p.repo}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-sm underline-offset-4 hover:underline decoration-emerald-500"
-                  >
-                    GitHub
-                  </a>
                 </div>
-              </Card>
-            </motion.article>
-          ))}
-        </div>
-      </Section>
+                <ExternalLink className="h-5 w-5 shrink-0 opacity-80 text-emerald-500" />
+              </div>
+            </a>
+            <div className="mt-4 flex items-center gap-3">
+              <a href={p.demo} target="_blank" rel="noreferrer" className="text-sm underline-offset-4 hover:underline decoration-emerald-500">Live Demo</a>
+              <a href={p.repo} target="_blank" rel="noreferrer" className="text-sm underline-offset-4 hover:underline decoration-emerald-500">GitHub</a>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
+
 
       {/* Case Studies */}
       <Section id="case-studies" title="Case Studies (Impact)">
