@@ -107,7 +107,7 @@ const projects: Project[] = [
     {
     title: "Client Work – Company Profile",
     desc: "A modern company profile system built with Next.js and TailwindCSS, designed to be dynamic and reliable.",
-    tech: ["Python", "Streamlit", "SBERT", "Cosine Similarity", "React"],
+    tech: ["Next.js", "TailwindCSS", "Type Script", "React"],
     img: "/jambuku.png",
     demo: "https://jambuku.vercel.app/",
     repo: "https://github.com/xxxZino/Job-Recommender",
