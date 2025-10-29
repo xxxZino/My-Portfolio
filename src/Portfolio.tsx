@@ -210,32 +210,31 @@ function HeroBackdrop() {
   );
 }
 
-export type Project = { title: string; desc: string; tech: string[]; img: string; see: string; repo: string };
+export type Project = { title: string; desc: string; tech: string[]; img: string; demo: string; repo: string };
 
 const projects: Project[] = [
-
   {
     title: "Client Work – Company Profile",
     desc: "A modern company profile system built with Next.js and TailwindCSS, designed to be dynamic and reliable.",
     tech: ["Next.js", "TailwindCSS", "Type Script", "React"],
     img: "/jambuku.png",
-    see: "https://www.jambuku.com/",
+    demo: "https://www.jambuku.com/",
     repo: "#",
-  },
-  {
-    title: "Client Work – Personal Portfolio",
-    desc: "A responsive portfolio website powered by Next.js and TailwindCSS with a focus on modern design and performance.",
-    tech: ["Next.js", "TailwindCSS", "Type Script", "React"],
-    img: "/Preview.png",
-    see: "https://sj-portofolio.vercel.app/",
-    repo: "",
   },
   {
     title: "Client Work – Personal Portfolio ",
     desc: "A modern portfolio website built with Next.js and TailwindCSS, designed to look smooth, elegant, and full of clean animations.",
     tech: ["Next.js", "TailwindCSS", "Type Script", "React"],
     img: "/portrangga.png",
-    see: "https://rangga-portfolio-sigma.vercel.app/",
+    demo: "https://rangga-shen.vercel.app//",
+    repo: "",
+  },
+  {
+    title: "Client Work – Personal Portfolio",
+    desc: "A responsive portfolio website powered by Next.js and TailwindCSS with a focus on modern design and performance.",
+    tech: ["Next.js", "TailwindCSS", "Type Script", "React"],
+    img: "/Preview.png",
+    demo: "https://sj-portofolio.vercel.app/",
     repo: "",
   },
   {
@@ -243,7 +242,7 @@ const projects: Project[] = [
     desc: "NLP system to match candidates with vacancies using Sentence-BERT and Cosine similarity.",
     tech: ["Python", "Streamlit", "SBERT", "Cosine Similarity"],
     img: "/recsystem1.png",
-    see: "#",
+    demo: "#",
     repo: "https://github.com/xxxZino/Job-Recommender",
   },
 ];
@@ -265,6 +264,16 @@ const skillLogos = [
 
 const experiences = [
   {
+    role: "Fullstack Developer - Jambuku Project",
+    org: "Independent Project - Yogyakarta",
+    time: "Sept (2025) - Oct (2025)",
+    bullets: [
+      "Developed a full-stack company profile website for Jambuku, a local small business producing premium water guava products.",
+      "Built using Next.js 15, TailwindCSS 4, and Supabase, featuring a fully functional admin dashboard with CRUD operations and real-time image uploads.",
+      "Deployed on Vercel with a custom domain and optimized for responsiveness and performance across all devices.",
+    ],
+  },
+  {
     role: "Intern Fullstack Web Developer",
     org: "PT. GIT Solution – Yogyakarta",
     time: "2024 – 2025",
@@ -282,7 +291,7 @@ const ProjectsCarousel: React.FC<{
     desc: string;
     tech: string[];
     img: string;
-    see: string;
+    demo: string;
     repo: string;
   }[];
 }> = ({ projects }) => {
@@ -364,7 +373,7 @@ const ProjectsCarousel: React.FC<{
             className="snap-start shrink-0 w-[88%] sm:w-[64%] md:w-[55%] lg:w-[46%] xl:w-[34%]"
           >
             <Card>
-              <a href={p.see} target="_blank" rel="noreferrer" className="block">
+              <a href={p.demo} target="_blank" rel="noreferrer" className="block">
                 <div className="overflow-hidden rounded-xl">
                   <img
                     src={p.img}
@@ -387,7 +396,7 @@ const ProjectsCarousel: React.FC<{
                 </div>
               </a>
               <div className="mt-4 flex items-center gap-3">
-                <a href={p.see} target="_blank" rel="noreferrer" className="text-sm underline-offset-4 hover:underline decoration-emerald-500">
+                <a href={p.demo} target="_blank" rel="noreferrer" className="text-sm underline-offset-4 hover:underline decoration-emerald-500">
                   See
                 </a>
                 <a href={p.repo} target="_blank" rel="noreferrer" className="text-sm underline-offset-4 hover:underline decoration-emerald-500">
@@ -784,7 +793,7 @@ export default function Portfolio() {
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {projects.map((p) => (
                 <Card key={p.title}>
-                  <a href={p.see} target="_blank" rel="noreferrer" className="block">
+                  <a href={p.demo} target="_blank" rel="noreferrer" className="block">
                     <div className="overflow-hidden rounded-xl">
                       <img
                         src={p.img}
@@ -805,7 +814,7 @@ export default function Portfolio() {
                     </div>
                   </a>
                   <div className="mt-4 flex items-center gap-3">
-                    <a href={p.see} target="_blank" rel="noreferrer" className="text-sm underline-offset-4 hover:underline decoration-emerald-500">Live Demo</a>
+                    <a href={p.demo} target="_blank" rel="noreferrer" className="text-sm underline-offset-4 hover:underline decoration-emerald-500">Live Demo</a>
                     <a href={p.repo} target="_blank" rel="noreferrer" className="text-sm underline-offset-4 hover:underline decoration-emerald-500">GitHub</a>
                   </div>
                 </Card>
