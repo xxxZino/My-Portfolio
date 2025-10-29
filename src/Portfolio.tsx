@@ -1,13 +1,13 @@
 import React from "react";
-import { motion } from "framer-motion";
-import { ArrowRight, Mail, Github, Linkedin, ExternalLink, Download, Sun, Moon, Menu, X, ArrowUp } from "lucide-react";
+import { motion, useMotionValue, useTransform } from "framer-motion";
+import {
+  ArrowRight, Mail, Github, Linkedin, ExternalLink, Download, Sun, Moon, Menu, X, ArrowUp,
+  Sparkles, Rocket, Stars, Zap, Cpu, Palette
+} from "lucide-react";
 
-// ---------- Small UI ----------
 const Preloader = ({ ready }: { ready: boolean }) => (
   <motion.div
-    className={`fixed inset-0 z-[60] grid place-items-center bg-white dark:bg-slate-950 ${
-      ready ? "pointer-events-none" : "pointer-events-auto"
-    }`}
+    className={`fixed inset-0 z-[60] grid place-items-center bg-white dark:bg-slate-950 ${ready ? "pointer-events-none" : "pointer-events-auto"}`}
     initial={{ opacity: 1 }}
     animate={{ opacity: ready ? 0 : 1 }}
     transition={{ duration: 0.5 }}
@@ -70,7 +70,6 @@ const Section = ({
   </section>
 );
 
-
 const Badge = ({ children }: { children: React.ReactNode }) => (
   <span className="inline-flex items-center rounded-full border border-slate-200/70 px-3 py-1 text-xs font-medium text-slate-700 dark:text-slate-200 dark:border-slate-700/80 bg-white/70 dark:bg-slate-900/60 backdrop-blur-sm ring-1 ring-inset ring-emerald-500/10">
     {children}
@@ -84,48 +83,171 @@ const Card = ({ children, className = "" }: { children: React.ReactNode; classNa
   </div>
 );
 
-// ---------- Data ----------
-export type Project = { title: string; desc: string; tech: string[]; img: string; demo: string; repo: string };
+function MagneticCTA({
+  children,
+  className = "",
+  onClick,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+}) {
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const tx = useTransform(mx, [-50, 50], [-6, 6]);
+  const ty = useTransform(my, [-50, 50], [-6, 6]);
+  function onMove(e: React.MouseEvent<HTMLButtonElement>) {
+    const r = (e.currentTarget as HTMLButtonElement).getBoundingClientRect();
+    mx.set(e.clientX - (r.left + r.width / 2));
+    my.set(e.clientY - (r.top + r.height / 2));
+  }
+  function onLeave() {
+    mx.set(0);
+    my.set(0);
+  }
+  return (
+    <motion.button
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      onClick={onClick}
+      style={{ x: tx, y: ty }}
+      className={`inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-5 py-2.5 text-sm shadow-lg ring-1 ring-white/10 hover:shadow-xl transition-all ${className}`}
+    >
+      {children}
+    </motion.button>
+  );
+}
+
+function Float({
+  children,
+  duration = 6,
+  delay = 0,
+  distance = 10,
+  className = "",
+}: {
+  children: React.ReactNode;
+  duration?: number;
+  delay?: number;
+  distance?: number;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      className={className}
+      animate={{ y: [0, -distance, 0] }}
+      transition={{ duration, delay, repeat: Infinity, ease: "easeInOut" }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function OrbitBadge({
+  children,
+  radius = 120,
+  duration = 24,
+  delay = 0,
+  reverse = false,
+}: {
+  children: React.ReactNode;
+  radius?: number;
+  duration?: number;
+  delay?: number;
+  reverse?: boolean;
+}) {
+  const dir = reverse ? -1 : 1;
+  return (
+    <motion.div
+      className="pointer-events-none absolute inset-0 flex items-center justify-center"
+      animate={{ rotate: [0, 360 * dir] }}
+      transition={{ duration, repeat: Infinity, ease: "linear", delay }}
+    >
+      <motion.div
+        className="pointer-events-auto"
+        style={{ transform: `translateY(-${radius}px)` }}
+        animate={{ rotate: [0, -360 * dir] }}
+        transition={{ duration, repeat: Infinity, ease: "linear", delay }}
+      >
+        <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[11px] text-emerald-700 dark:text-emerald-300 shadow-sm backdrop-blur">
+          {children}
+        </span>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function HeroBackdrop() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+      <motion.div
+        className="absolute -top-20 -left-10 h-[36rem] w-[36rem] rounded-full blur-3xl opacity-40"
+        style={{ background: "radial-gradient(45% 45% at 50% 50%, rgba(16,185,129,0.30) 0%, rgba(16,185,129,0.0) 70%)" }}
+        animate={{ x: [-30, 30, -10, 0], y: [0, -20, 10, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute top-20 right-0 h-[34rem] w-[34rem] rounded-full blur-3xl opacity-35"
+        style={{ background: "radial-gradient(45% 45% at 50% 50%, rgba(20,184,166,0.28) 0%, rgba(20,184,166,0.0) 70%)" }}
+        animate={{ x: [0, -25, 15, 0], y: [10, -15, 5, 0] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+      />
+      <motion.div
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[30rem] w-[30rem] rounded-full blur-3xl opacity-25"
+        style={{ background: "radial-gradient(50% 50% at 50% 50%, rgba(99,102,241,0.22) 0%, rgba(99,102,241,0.0) 70%)" }}
+        animate={{ x: [0, 15, -15, 0], y: [0, 10, -10, 0] }}
+        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+      />
+      {[...Array(6)].map((_, i) => (
+        <motion.span
+          key={i}
+          className="absolute h-px w-28 bg-gradient-to-r from-transparent via-white/70 to-transparent opacity-60"
+          style={{ top: `${10 + i * 12}%`, left: i % 2 ? "10%" : "70%", rotate: i % 2 ? -18 : -162 }}
+          animate={{ x: i % 2 ? [0, 200, 0] : [0, -200, 0] }}
+          transition={{ duration: 8 + i, repeat: Infinity, ease: "easeInOut", delay: i * 0.6 }}
+        />
+      ))}
+    </div>
+  );
+}
+
+export type Project = { title: string; desc: string; tech: string[]; img: string; see: string; repo: string };
 
 const projects: Project[] = [
+
   {
-    title: "Client Work – Personal Portfolio ",
-    desc: "A modern portfolio website built with Next.js and TailwindCSS, designed to look smooth, elegant, and full of clean animations.",
+    title: "Client Work – Company Profile",
+    desc: "A modern company profile system built with Next.js and TailwindCSS, designed to be dynamic and reliable.",
     tech: ["Next.js", "TailwindCSS", "Type Script", "React"],
-    img: "/portrangga.png",
-    demo: "https://rangga-portfolio-sigma.vercel.app/",
-    repo: "https://github.com/xxxZino/Job-Recommender",
+    img: "/jambuku.png",
+    see: "https://www.jambuku.com/",
+    repo: "#",
   },
   {
     title: "Client Work – Personal Portfolio",
     desc: "A responsive portfolio website powered by Next.js and TailwindCSS with a focus on modern design and performance.",
     tech: ["Next.js", "TailwindCSS", "Type Script", "React"],
     img: "/Preview.png",
-    demo: "https://sj-portofolio.vercel.app/",
-    repo: "https://github.com/xxxZino/Job-Recommender",
+    see: "https://sj-portofolio.vercel.app/",
+    repo: "",
   },
-    {
-    title: "Client Work – Company Profile",
-    desc: "A modern company profile system built with Next.js and TailwindCSS, designed to be dynamic and reliable.",
+  {
+    title: "Client Work – Personal Portfolio ",
+    desc: "A modern portfolio website built with Next.js and TailwindCSS, designed to look smooth, elegant, and full of clean animations.",
     tech: ["Next.js", "TailwindCSS", "Type Script", "React"],
-    img: "/jambuku.png",
-    demo: "https://jambuku.vercel.app/",
-    repo: "https://github.com/xxxZino/Job-Recommender",
+    img: "/portrangga.png",
+    see: "https://rangga-portfolio-sigma.vercel.app/",
+    repo: "",
   },
-
   {
     title: "Job Candidate Recommender",
     desc: "NLP system to match candidates with vacancies using Sentence-BERT and Cosine similarity.",
     tech: ["Python", "Streamlit", "SBERT", "Cosine Similarity"],
     img: "/recsystem1.png",
-    demo: "#",
+    see: "#",
     repo: "https://github.com/xxxZino/Job-Recommender",
   },
-
-  
 ];
 
-// Logos via devicon CDN (ringan & stabil)
 const skillLogos = [
   { alt: "HTML5", src: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" },
   { alt: "CSS3", src: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" },
@@ -138,7 +260,6 @@ const skillLogos = [
   { alt: "FastAPI", src: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg" },
   { alt: "PostgreSQL", src: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" },
   { alt: "Prisma", src: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prisma/prisma-original.svg" },
-  { alt: "Docker", src: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" },
   { alt: "Git", src: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" },
 ] as const;
 
@@ -155,22 +276,19 @@ const experiences = [
   },
 ] as const;
 
-// PROJECT CAROUSEL
 const ProjectsCarousel: React.FC<{
   projects: {
     title: string;
     desc: string;
     tech: string[];
     img: string;
-    demo: string;
+    see: string;
     repo: string;
   }[];
 }> = ({ projects }) => {
   const trackRef = React.useRef<HTMLDivElement>(null);
   const [active, setActive] = React.useState(0);
   const rafRef = React.useRef<number | null>(null);
-
-  // Scroll helper: ke index tertentu
   const scrollToIndex = React.useCallback((idx: number) => {
     const el = trackRef.current;
     if (!el) return;
@@ -180,14 +298,10 @@ const ProjectsCarousel: React.FC<{
     const offset = item.offsetLeft - parseInt(getComputedStyle(el).paddingLeft || "0", 10);
     el.scrollTo({ left: offset, behavior: "smooth" });
   }, []);
-
-  // Tombol prev/next
   const scrollByAmount = (dir: "prev" | "next") => {
     const next = dir === "next" ? active + 1 : active - 1;
     scrollToIndex(next);
   };
-
-  // Hitung slide aktif berdasarkan elemen paling dekat ke tengah viewport track
   const recalcActive = React.useCallback(() => {
     const el = trackRef.current;
     if (!el) return;
@@ -206,14 +320,10 @@ const ProjectsCarousel: React.FC<{
     });
     setActive(nearest);
   }, []);
-
-  // Scroll handler (throttled via rAF)
   const onScroll = () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = requestAnimationFrame(recalcActive);
   };
-
-  // Recalc saat resize
   React.useEffect(() => {
     const el = trackRef.current;
     if (!el) return;
@@ -222,8 +332,6 @@ const ProjectsCarousel: React.FC<{
     ro.observe(el);
     return () => ro.disconnect();
   }, [recalcActive]);
-
-  // Keyboard ← → untuk navigasi
   const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "ArrowRight") {
       e.preventDefault();
@@ -233,10 +341,8 @@ const ProjectsCarousel: React.FC<{
       scrollByAmount("prev");
     }
   };
-
   return (
     <div className="relative">
-      {/* track scroll-snap */}
       <div
         ref={trackRef}
         role="listbox"
@@ -244,12 +350,7 @@ const ProjectsCarousel: React.FC<{
         tabIndex={0}
         onKeyDown={onKeyDown}
         onScroll={onScroll}
-        className="
-          flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2
-          px-1
-          focus:outline-none focus:ring-2 focus:ring-emerald-400/60 rounded-xl
-          [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
-        "
+        className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 px-1 focus:outline-none focus:ring-2 focus:ring-emerald-400/60 rounded-xl [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {projects.map((p, i) => (
           <motion.article
@@ -260,13 +361,10 @@ const ProjectsCarousel: React.FC<{
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.5, delay: i * 0.05 }}
-            className="
-              snap-start shrink-0
-              w-[88%] sm:w-[64%] md:w-[55%] lg:w-[46%] xl:w-[34%]
-            "
+            className="snap-start shrink-0 w-[88%] sm:w-[64%] md:w-[55%] lg:w-[46%] xl:w-[34%]"
           >
             <Card>
-              <a href={p.demo} target="_blank" rel="noreferrer" className="block">
+              <a href={p.see} target="_blank" rel="noreferrer" className="block">
                 <div className="overflow-hidden rounded-xl">
                   <img
                     src={p.img}
@@ -289,8 +387,8 @@ const ProjectsCarousel: React.FC<{
                 </div>
               </a>
               <div className="mt-4 flex items-center gap-3">
-                <a href={p.demo} target="_blank" rel="noreferrer" className="text-sm underline-offset-4 hover:underline decoration-emerald-500">
-                  Live Demo
+                <a href={p.see} target="_blank" rel="noreferrer" className="text-sm underline-offset-4 hover:underline decoration-emerald-500">
+                  See
                 </a>
                 <a href={p.repo} target="_blank" rel="noreferrer" className="text-sm underline-offset-4 hover:underline decoration-emerald-500">
                   GitHub
@@ -300,34 +398,27 @@ const ProjectsCarousel: React.FC<{
           </motion.article>
         ))}
       </div>
-
-      {/* tombol prev/next */}
       <div className="mt-4 flex items-center justify-center gap-3">
         <button
-          onClick={() => scrollByAmount("prev")}
+          onClick={() => scrollToIndex(Math.max(0, active - 1))}
           className="rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           Prev
         </button>
         <button
-          onClick={() => scrollByAmount("next")}
+          onClick={() => scrollToIndex(active + 1)}
           className="rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           Next
         </button>
       </div>
-
-      {/* dot indicators */}
       <div className="mt-3 flex justify-center gap-2">
         {projects.map((_, i) => (
           <button
             key={i}
             aria-label={`Slide ${i + 1}`}
             onClick={() => scrollToIndex(i)}
-            className={[
-              "h-2.5 rounded-full transition-all",
-              active === i ? "w-6 bg-emerald-500" : "w-2.5 bg-slate-300 dark:bg-slate-700",
-            ].join(" ")}
+            className={["h-2.5 rounded-full transition-all", active === i ? "w-6 bg-emerald-500" : "w-2.5 bg-slate-300 dark:bg-slate-700"].join(" ")}
           />
         ))}
       </div>
@@ -335,19 +426,14 @@ const ProjectsCarousel: React.FC<{
   );
 };
 
-
-
-// ---------- Component ----------
 export default function Portfolio() {
-  // Theme & mobile menu
   const [isDark, setIsDark] = React.useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
   const [menuOpen, setMenuOpen] = React.useState(false);
-
-  // Preloader flag – ready setelah window load
   const [isReady, setIsReady] = React.useState(false);
+
   React.useEffect(() => {
     const onLoaded = () => setIsReady(true);
     if (document.readyState === "complete") setIsReady(true);
@@ -361,11 +447,8 @@ export default function Portfolio() {
     else root.classList.remove("dark");
   }, [isDark]);
 
-  // Slider
   const [showAllProjects, setShowAllProjects] = React.useState(false);
 
-
-  // Smooth scroll + active section highlight
   const navIds = React.useMemo(() => ["projects", "case-studies", "skills", "services", "experience", "contact"], []);
   const [activeId, setActiveId] = React.useState<string>("");
 
@@ -395,7 +478,6 @@ export default function Portfolio() {
       },
       { rootMargin: "-45% 0px -50% 0px", threshold: 0.01 }
     );
-
     navIds.forEach((id) => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
@@ -403,7 +485,6 @@ export default function Portfolio() {
     return () => observer.disconnect();
   }, [navIds]);
 
-  // Contact form handler (mailto)
   const onSubmitContact = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -411,27 +492,21 @@ export default function Portfolio() {
     const name = String(formData.get("name") || "");
     const email = String(formData.get("email") || "");
     const message = String(formData.get("message") || "");
-
     const to = "egasaputraaa12@gmail.com";
     const subject = encodeURIComponent(`Portfolio Inquiry from ${name}`);
     const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
     window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
   };
 
-
   return (
     <div className="min-h-screen scroll-smooth bg-gradient-to-b from-slate-50 via-white to-slate-50 text-slate-900 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950 dark:text-slate-100 selection:bg-emerald-600 selection:text-white font-['Inter',ui-sans-serif]">
       <Preloader ready={isReady} />
       <ScrollToTop />
-
-      {/* Navbar */}
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/70 dark:bg-slate-900/50 border-b border-slate-200/80 dark:border-slate-800/80">
         <div className="mx-auto max-w-6xl px-4 h-16 flex items-center justify-between">
           <a href="#" className="font-extrabold tracking-tight text-lg font-['Inter']">
             zino<span className="text-emerald-500">.lab</span>
           </a>
-
-          {/* Desktop nav */}
           <nav className="hidden sm:flex items-center gap-6 text-sm">
             {navIds.map((id) => {
               const isActive = activeId === id;
@@ -443,24 +518,18 @@ export default function Portfolio() {
                     e.preventDefault();
                     scrollToId(id);
                   }}
-                  className={`capitalize relative hover:text-emerald-600 dark:hover:text-emerald-400 ${
-                    isActive ? "text-emerald-600 dark:text-emerald-400" : ""
-                  }`}
+                  className={`capitalize relative hover:text-emerald-600 dark:hover:text-emerald-400 ${isActive ? "text-emerald-600 dark:text-emerald-400" : ""}`}
                 >
                   {id.replace("-", " ")}
                   <span
-                    className={`absolute -bottom-1 left-0 h-0.5 transition-all duration-300 ${
-                      isActive ? "w-full bg-emerald-500" : "w-0 bg-transparent"
-                    }`}
+                    className={`absolute -bottom-1 left-0 h-0.5 transition-all duration-300 ${isActive ? "w-full bg-emerald-500" : "w-0 bg-transparent"}`}
                     aria-hidden
                   />
                 </a>
               );
             })}
           </nav>
-
           <div className="flex items-center gap-2">
-            {/* Mobile menu button */}
             <button
               className="sm:hidden inline-flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 p-2 hover:bg-slate-100 dark:hover:bg-slate-800"
               aria-label="Open menu"
@@ -468,8 +537,6 @@ export default function Portfolio() {
             >
               {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
-
-            {/* Theme + CV (desktop only) */}
             <button
               onClick={() => setIsDark((v) => !v)}
               aria-label="Toggle theme"
@@ -493,8 +560,6 @@ export default function Portfolio() {
             </a>
           </div>
         </div>
-
-        {/* Mobile panel */}
         {menuOpen && (
           <div className="sm:hidden border-t border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl">
             <div className="mx-auto max-w-6xl px-4 py-3 grid gap-1">
@@ -538,23 +603,22 @@ export default function Portfolio() {
         )}
       </header>
 
-      {/* Hero */}
       <section className="relative overflow-hidden">
-        <div aria-hidden className="pointer-events-none absolute -inset-x-10 -top-40 h-80 blur-3xl opacity-50">
-          <div className="h-full w-full bg-[radial-gradient(ellipse_at_top_left,theme(colors.emerald.300/.3),transparent_70%)] dark:bg-[radial-gradient(ellipse_at_top_left,theme(colors.emerald.700/.2),transparent_70%)]" />
-        </div>
-
-        <div className="mx-auto max-w-6xl px-4 pt-20 sm:pt-28 pb-16">
-          <div className="grid items-center gap-10 sm:grid-cols-2">
+        <HeroBackdrop />
+        <div className="relative mx-auto max-w-6xl px-4 pt-24 sm:pt-32 pb-16">
+          <div className="grid items-center gap-12 sm:grid-cols-[1.08fr_.92fr]">
             <motion.div
               initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.6, ease: "easeOut" }}
+              className="sm:-mr-8 min-w-0"   // <-- FIX: biar teks boleh wrap
             >
-              <p className="mb-3 text-xs tracking-widest uppercase text-emerald-600 dark:text-emerald-400">Available for freelance</p>
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[11px] uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                Available for freelance
+              </div>
               <motion.h1
-                className="text-4xl sm:text-6xl font-extrabold leading-tight tracking-tight"
+                className="mt-4 text-[2.35rem] leading-[1.1] sm:text-6xl font-extrabold tracking-tight"
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.05 }}
@@ -562,12 +626,12 @@ export default function Portfolio() {
                 Crafting modern, scalable, and user friendly digital solutions.
               </motion.h1>
               <motion.p
-                className="mt-4 text-slate-600 dark:text-slate-300 max-w-prose"
+                className="mt-4 text-slate-600 dark:text-slate-300 max-w-prose sm:max-w-xl"  // <-- FIX: sedikit batasi lebar
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.15 }}
               >
-                I’m Ega, a full-stack developer passionate about crafting clean UIs and robust backends. My focus is on performance, accessibility, and elegant design.
+                I’m <span className="font-semibold">Ega</span>, a full-stack developer passionate about crafting clean UIs and robust backends. My focus is on performance, accessibility, and elegant design.
               </motion.p>
               <motion.div
                 className="mt-6 flex flex-wrap items-center gap-3"
@@ -575,29 +639,65 @@ export default function Portfolio() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.25 }}
               >
-                <a
-                  href="#projects"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToId("projects");
+                <MagneticCTA
+                  onClick={() => {
+                    const el = document.getElementById("projects");
+                    if (el) {
+                      const header = document.querySelector("header");
+                      const offset = (header?.clientHeight ?? 64) + 8;
+                      const y = el.getBoundingClientRect().top + window.scrollY - offset;
+                      window.scrollTo({ top: y, behavior: "smooth" });
+                    }
                   }}
-                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-5 py-2.5 text-sm shadow-lg hover:translate-y-[-1px] transition-all"
                 >
                   View Projects <ArrowRight className="h-4 w-4" />
-                </a>
-                <a
-                  href="#contact"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToId("contact");
+                </MagneticCTA>
+                <button
+                  onClick={() => {
+                    const el = document.getElementById("contact");
+                    if (el) {
+                      const header = document.querySelector("header");
+                      const offset = (header?.clientHeight ?? 64) + 8;
+                      const y = el.getBoundingClientRect().top + window.scrollY - offset;
+                      window.scrollTo({ top: y, behavior: "smooth" });
+                    }
                   }}
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+                  className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-700 px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
                 >
                   Contact Me
-                </a>
+                </button>
               </motion.div>
+              <div className="mt-8 overflow-hidden">
+                <motion.div
+                  className="flex gap-6 whitespace-nowrap text-xs tracking-wider uppercase text-slate-500 dark:text-slate-400"
+                  animate={{ x: ["0%", "-50%"] }}
+                  transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+                >
+                  {[
+                    "React",
+                    "TypeScript",
+                    "Next.js",
+                    "Tailwind",
+                    "Framer Motion",
+                    "Node.js",
+                    "SBERT",
+                    "Prisma",
+                    "React",        // duplicated intentionally for smooth loop
+                    "TypeScript",
+                    "Next.js",
+                    "Tailwind",
+                    "Framer Motion",
+                    "Node.js",
+                    "SBERT",
+                    "Prisma",
+                  ].map((t, i) => (
+                    <span key={i} className="inline-flex items-center gap-2">
+                       {t}
+                    </span>
+                  ))}
+                </motion.div>
+              </div>
             </motion.div>
-
             <motion.div
               className="relative"
               initial={{ opacity: 0, x: 16 }}
@@ -605,25 +705,32 @@ export default function Portfolio() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, ease: "easeOut" }}
             >
-              <motion.div animate={{ y: [0, -6, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}>
-                <motion.img
-                  src="/me.jpg"
-                  alt="Portrait of Ega Saputra"
-                  className="rounded-3xl shadow-xl ring-1 ring-emerald-500/20"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                  loading="eager"
-                  decoding="async"
-                  fetchPriority="high"
-                />
-              </motion.div>
+              <div className="relative mx-auto w-full max-w-md sm:max-w-lg">
+                <div className="relative -mb-6 sm:-mb-8 rounded-3xl border border-white/20">
+                  <motion.div
+                    className="rounded-2xl overflow-hidden ring-1 ring-emerald-500/20"
+                    whileHover={{ rotateX: 2, rotateY: -2, scale: 1.01 }}
+                    transition={{ type: "spring", stiffness: 180, damping: 16 }}
+                    style={{ transformStyle: "preserve-3d" }}
+                  >
+                    <img
+                      src="/me.jpg"
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = "https://picsum.photos/seed/ega/800/1000"; }} // <-- FIX: fallback
+                      alt="Portrait of Ega Saputra"
+                      className="w-full h-auto object-cover"
+                      loading="eager"
+                      decoding="async"
+                      fetchPriority="high"
+                    />
+                  </motion.div>
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Stats */}
-      <div className="mx-auto max-w-6xl px-4 -mt-8 sm:-mt-10">
+      <div className="mx-auto max-w-6xl px-4 -mt-6 sm:-mt-8">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
             { k: "Projects", v: "4+" },
@@ -631,87 +738,84 @@ export default function Portfolio() {
             { k: "Avg. LCP", v: "<2.0s" },
             { k: "Stack", v: "React/TS" },
           ].map((s, i) => (
-            <motion.div
-              key={s.k}
-              initial={{ opacity: 0, y: 8 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.4, delay: i * 0.05 }}
-              className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/40 p-4 text-center shadow-md"
-            >
-              <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{s.v}</div>
-              <div className="text-xs text-slate-500 mt-1">{s.k}</div>
-            </motion.div>
+            <Float key={s.k} delay={i * 0.15} duration={5 + i} distance={6}>
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.4, delay: i * 0.05 }}
+                className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/40 p-4 text-center shadow-md backdrop-blur"
+              >
+                <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{s.v}</div>
+                <div className="text-xs text-slate-500 mt-1">{s.k}</div>
+              </motion.div>
+            </Float>
           ))}
         </div>
       </div>
 
-      {/* Projects */}
-   <Section
-  id="projects"
-  title="Featured Projects"
-  action={
-    <button
-      onClick={() => setShowAllProjects(true)}
-      className="rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
-    >
-      See all
-    </button>
-  }
->
-  <ProjectsCarousel projects={projects} />
-</Section>
+      <Section
+        id="projects"
+        title="My Projects"
+        action={
+          <button
+            onClick={() => setShowAllProjects(true)}
+            className="rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+          >
+            See all
+          </button>
+        }
+      >
+        <ProjectsCarousel projects={projects} />
+      </Section>
 
-{/* Modal Semua Project */}
-{showAllProjects && (
-  <div className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm grid place-items-center px-4" role="dialog" aria-modal="true">
-    <div className="max-w-6xl w-full max-h-[85vh] overflow-y-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 sm:p-6">
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-lg font-semibold">All Projects</h3>
-        <button
-          onClick={() => setShowAllProjects(false)}
-          className="rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
-        >
-          Tutup
-        </button>
-      </div>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {projects.map((p) => (
-          <Card key={p.title}>
-            <a href={p.demo} target="_blank" rel="noreferrer" className="block">
-              <div className="overflow-hidden rounded-xl">
-                <img
-                  src={p.img}
-                  alt={`${p.title} screenshot`}
-                  loading="lazy"
-                  className="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                />
-              </div>
-              <div className="mt-4 flex items-start justify-between gap-3">
-                <div>
-                  <h4 className="font-semibold leading-snug">{p.title}</h4>
-                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{p.desc}</p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {p.tech.map((t) => <Badge key={t}>{t}</Badge>)}
-                  </div>
-                </div>
-                <ExternalLink className="h-5 w-5 shrink-0 opacity-80 text-emerald-500" />
-              </div>
-            </a>
-            <div className="mt-4 flex items-center gap-3">
-              <a href={p.demo} target="_blank" rel="noreferrer" className="text-sm underline-offset-4 hover:underline decoration-emerald-500">Live Demo</a>
-              <a href={p.repo} target="_blank" rel="noreferrer" className="text-sm underline-offset-4 hover:underline decoration-emerald-500">GitHub</a>
+      {showAllProjects && (
+        <div className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm grid place-items-center px-4" role="dialog" aria-modal="true">
+          <div className="max-w-6xl w-full max-h-[85vh] overflow-y-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 sm:p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">All Projects</h3>
+              <button
+                onClick={() => setShowAllProjects(false)}
+                className="rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                Tutup
+              </button>
             </div>
-          </Card>
-        ))}
-      </div>
-    </div>
-  </div>
-)}
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {projects.map((p) => (
+                <Card key={p.title}>
+                  <a href={p.see} target="_blank" rel="noreferrer" className="block">
+                    <div className="overflow-hidden rounded-xl">
+                      <img
+                        src={p.img}
+                        alt={`${p.title} screenshot`}
+                        loading="lazy"
+                        className="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      />
+                    </div>
+                    <div className="mt-4 flex items-start justify-between gap-3">
+                      <div>
+                        <h4 className="font-semibold leading-snug">{p.title}</h4>
+                        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{p.desc}</p>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {p.tech.map((t) => <Badge key={t}>{t}</Badge>)}
+                        </div>
+                      </div>
+                      <ExternalLink className="h-5 w-5 shrink-0 opacity-80 text-emerald-500" />
+                    </div>
+                  </a>
+                  <div className="mt-4 flex items-center gap-3">
+                    <a href={p.see} target="_blank" rel="noreferrer" className="text-sm underline-offset-4 hover:underline decoration-emerald-500">Live Demo</a>
+                    <a href={p.repo} target="_blank" rel="noreferrer" className="text-sm underline-offset-4 hover:underline decoration-emerald-500">GitHub</a>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
-
-      {/* Case Studies */}
-      <Section id="case-studies" title="Case Studies (Impact)">
+      <Section id="case-studies" title="Case Studies">
         <div className="grid gap-6 sm:grid-cols-2">
           {[
             {
@@ -737,7 +841,6 @@ export default function Portfolio() {
         </div>
       </Section>
 
-      {/* Skills & Tools (logo-based) */}
       <Section id="skills" title="Skills & Tools">
         <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 gap-4">
           {skillLogos.map((l) => (
@@ -756,7 +859,6 @@ export default function Portfolio() {
         </div>
       </Section>
 
-      {/* Services */}
       <Section id="services" title="Services">
         <div className="grid gap-6 sm:grid-cols-3">
           {[
@@ -789,7 +891,6 @@ export default function Portfolio() {
         </div>
       </Section>
 
-      {/* Experience */}
       <Section id="experience" title="Experience">
         <div className="space-y-6">
           {experiences.map((e, idx) => (
@@ -819,7 +920,6 @@ export default function Portfolio() {
         </div>
       </Section>
 
-      {/* Contact */}
       <Section id="contact" title="Contact">
         <div className="grid gap-8 sm:grid-cols-2">
           <Card>
@@ -853,7 +953,6 @@ export default function Portfolio() {
               </a>
             </div>
           </Card>
-
           <Card>
             <form className="grid gap-3" onSubmit={onSubmitContact} aria-label="Contact form">
               <label className="grid gap-1 text-sm">
@@ -888,23 +987,18 @@ export default function Portfolio() {
               >
                 Send Message
               </button>
-              <p className="text-xs text-slate-500 mt-1">This opens your email app with the message pre‑filled.</p>
+              <p className="text-xs text-slate-500 mt-1">This opens your email app with the message pre-filled.</p>
             </form>
           </Card>
         </div>
       </Section>
 
-      {/* Footer */}
       <footer className="border-t border-slate-200/70 dark:border-slate-800/70">
         <div className="mx-auto max-w-6xl px-4 py-10 text-sm flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-slate-500">© {new Date().getFullYear()} Zino. All rights reserved.</p>
           <div className="flex items-center gap-4">
-            <a href="#" className="hover:underline underline-offset-4">
-              Privacy
-            </a>
-            <a href="#" className="hover:underline underline-offset-4">
-              Imprint
-            </a>
+            <a href="#" className="hover:underline underline-offset-4">Privacy</a>
+            <a href="#" className="hover:underline underline-offset-4">Imprint</a>
           </div>
         </div>
       </footer>

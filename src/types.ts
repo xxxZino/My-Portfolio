@@ -7,7 +7,6 @@ export type Project = {
   demo: string;
   repo: string;
 
-  // 
   imageCount?: number;
   videoCount?: number;
 };
