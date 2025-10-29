@@ -2,7 +2,7 @@ import React from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import {
   ArrowRight, Mail, Github, Linkedin, ExternalLink, Download, Sun, Moon, Menu, X, ArrowUp,
-  Sparkles, Rocket, Stars, Zap, Cpu, Palette
+
 } from "lucide-react";
 
 const Preloader = ({ ready }: { ready: boolean }) => (
@@ -142,39 +142,7 @@ function Float({
   );
 }
 
-function OrbitBadge({
-  children,
-  radius = 120,
-  duration = 24,
-  delay = 0,
-  reverse = false,
-}: {
-  children: React.ReactNode;
-  radius?: number;
-  duration?: number;
-  delay?: number;
-  reverse?: boolean;
-}) {
-  const dir = reverse ? -1 : 1;
-  return (
-    <motion.div
-      className="pointer-events-none absolute inset-0 flex items-center justify-center"
-      animate={{ rotate: [0, 360 * dir] }}
-      transition={{ duration, repeat: Infinity, ease: "linear", delay }}
-    >
-      <motion.div
-        className="pointer-events-auto"
-        style={{ transform: `translateY(-${radius}px)` }}
-        animate={{ rotate: [0, -360 * dir] }}
-        transition={{ duration, repeat: Infinity, ease: "linear", delay }}
-      >
-        <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[11px] text-emerald-700 dark:text-emerald-300 shadow-sm backdrop-blur">
-          {children}
-        </span>
-      </motion.div>
-    </motion.div>
-  );
-}
+
 
 function HeroBackdrop() {
   return (
