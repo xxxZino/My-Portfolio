@@ -655,17 +655,13 @@ export default function Portfolio() {
                     "TypeScript",
                     "Next.js",
                     "Tailwind",
-                    "Framer Motion",
                     "Node.js",
-                    "SBERT",
                     "Prisma",
                     "React",        // duplicated intentionally for smooth loop
                     "TypeScript",
                     "Next.js",
                     "Tailwind",
-                    "Framer Motion",
                     "Node.js",
-                    "SBERT",
                     "Prisma",
                   ].map((t, i) => (
                     <span key={i} className="inline-flex items-center gap-2">
@@ -791,32 +787,6 @@ export default function Portfolio() {
           </div>
         </div>
       )}
-
-      <Section id="case-studies" title="Case Studies">
-        <div className="grid gap-6 sm:grid-cols-2">
-          {[
-            {
-              title: "Hiring Recommender MVP",
-              context: "University research | 8 weeks",
-              impact: [
-                "Hybrid SBERT+TF-IDF for matching",
-                "Top-k retrieval <200ms on 5k profiles",
-                "Streamlit dashboard for HR insights",
-              ],
-            },
-          ].map((c) => (
-            <Card key={c.title}>
-              <h3 className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">{c.title}</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">{c.context}</p>
-              <ul className="mt-3 list-disc pl-5 text-sm text-slate-700 dark:text-slate-300 space-y-2">
-                {c.impact.map((i) => (
-                  <li key={i}>{i}</li>
-                ))}
-              </ul>
-            </Card>
-          ))}
-        </div>
-      </Section>
 
       <Section id="skills" title="Skills & Tools">
         <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 gap-4">
