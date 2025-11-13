@@ -244,7 +244,7 @@ const experiences = [
   {
     role: "Intern Fullstack Web Developer",
     org: "PT. GIT Solution – Yogyakarta",
-    time: "Oct (2024) – Dec (2025)",
+    time: "Oct (2024) – Dec (2024)",
     bullets: [
       "Completed internship program as a Fullstack Web Developer (Oct 2024 – Dec 2024).",
       "Built and optimized web applications with a focus on responsive design and performance.",
