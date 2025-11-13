@@ -210,7 +210,7 @@ const projects: Project[] = [
     desc: "NLP system to match candidates with vacancies using Sentence-BERT and Cosine similarity.",
     tech: ["Python", "Streamlit", "SBERT", "Cosine Similarity"],
     img: "/recsystem1.png",
-    demo: "#",
+    demo: "https://sistemrekomendasisbert.streamlit.app/",
     repo: "https://github.com/xxxZino/Job-Recommender",
   },
 ];
