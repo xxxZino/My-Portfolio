@@ -233,7 +233,7 @@ const skillLogos = [
 const experiences = [
   {
     role: "Fullstack Developer - Jambuku Project",
-    org: "Independent Project - Yogyakarta",
+    org: "Collaborative Project With A Lecturer - Yogyakarta",
     time: "Sept (2025) - Oct (2025)",
     bullets: [
       "Developed a full-stack company profile website for Jambuku, a local small business producing premium water guava products.",
