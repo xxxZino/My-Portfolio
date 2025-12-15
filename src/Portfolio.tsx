@@ -426,7 +426,7 @@ export default function Portfolio() {
 
   const [showAllProjects, setShowAllProjects] = React.useState(false);
 
-  const navIds = React.useMemo(() => ["projects", "case-studies", "skills", "services", "experience", "contact"], []);
+  const navIds = React.useMemo(() => ["projects", "skills", "services", "experience", "contact"], []);
   const [activeId, setActiveId] = React.useState<string>("");
 
   const scrollToId = React.useCallback((id: string) => {
@@ -589,7 +589,7 @@ export default function Portfolio() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.6, ease: "easeOut" }}
-              className="sm:-mr-8 min-w-0"   // <-- FIX: biar teks boleh wrap
+              className="sm:-mr-8 min-w-0"
             >
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[11px] uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
                 Available for freelance
@@ -603,7 +603,7 @@ export default function Portfolio() {
                 Crafting modern, scalable, and user friendly digital solutions.
               </motion.h1>
               <motion.p
-                className="mt-4 text-slate-600 dark:text-slate-300 max-w-prose sm:max-w-xl"  // <-- FIX: sedikit batasi lebar
+                className="mt-4 text-slate-600 dark:text-slate-300 max-w-prose sm:max-w-xl"  
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.15 }}
@@ -656,13 +656,15 @@ export default function Portfolio() {
                     "Next.js",
                     "Tailwind",
                     "Node.js",
-                    "Prisma",
-                    "React",        // duplicated intentionally for smooth loop
+                    "Figma",
+                    "Github",
+                    "React",        
                     "TypeScript",
                     "Next.js",
                     "Tailwind",
                     "Node.js",
-                    "Prisma",
+                    "Figma",
+                    "Github",
                   ].map((t, i) => (
                     <span key={i} className="inline-flex items-center gap-2">
                        {t}
