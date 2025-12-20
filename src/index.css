@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* base ringan supaya gak “polos” */
 @layer base {
   :root { color-scheme: light dark; }
   html, body, #root { height: 100%; }
