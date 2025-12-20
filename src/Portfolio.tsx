@@ -404,10 +404,7 @@ const ProjectsCarousel: React.FC<{
 };
 
 export default function Portfolio() {
-  const [isDark, setIsDark] = React.useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  });
+  const [isDark, setIsDark] = React.useState<boolean>(true);
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [isReady, setIsReady] = React.useState(false);
 
