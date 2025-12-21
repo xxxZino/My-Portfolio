@@ -907,7 +907,7 @@ export default function Portfolio() {
         </div>
       </Section>
 
-      <Section id="how-i-work" title="No Bullshit, Just Work.">
+      <Section id="how i work" title="No Bullshit, Just Work.">
         <div className="relative max-w-5xl space-y-12">
           {(
             [
