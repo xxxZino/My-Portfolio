@@ -1,9 +1,82 @@
 import React from "react";
-import { motion, useMotionValue, useTransform } from "framer-motion";
-import {
-  ArrowRight, Mail, Github, Linkedin, ExternalLink, Download, Sun, Moon, Menu, X, ArrowUp,
+import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
+import {ArrowRight, Mail, Github, Linkedin, ExternalLink, Download, Sun, Moon, Menu, X, ArrowUp,} from "lucide-react";
+import {useState } from "react";
 
-} from "lucide-react";
+const answerVariants = {
+  hidden: { opacity: 0, y: -6 },
+  visible: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -6 },
+};
+
+export function ConversationBubbleStable({
+  item,
+  index,
+}: {
+  item: {
+    q: string;
+    a: string;
+    side: "left" | "right";
+  };
+  index: number;
+}) {
+  const [open, setOpen] = useState(false);
+  const isLeft = item.side === "left";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: isLeft ? -40 : 40 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.5, delay: index * 0.12, ease: "easeOut" }}
+      className={`flex flex-col ${
+        isLeft ? "items-start text-left" : "items-end text-right"
+      }`}
+    >
+      {/* QUESTION */}
+      <div
+        className={`max-w-[78%] rounded-2xl px-5 py-3 shadow-md
+        ${
+          isLeft
+            ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white"
+            : "bg-emerald-500 text-white"
+        }`}
+      >
+        <p className="text-sm font-medium">{item.q}</p>
+      </div>
+
+      {/* ANSWER SLOT (SPACE STABLE) */}
+      <div className="mt-2 min-h-[52px] max-w-[78%]">
+        <AnimatePresence mode="wait">
+          {open && (
+            <motion.div
+              key="answer"
+              variants={answerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="rounded-2xl bg-white dark:bg-slate-900 px-5 py-3 shadow-lg"
+            >
+              <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                {item.a}
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* TOGGLE */}
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="mt-1 text-xs text-slate-400 hover:text-emerald-500 transition"
+      >
+        {open ? "hide answer" : "show answer"}
+      </button>
+    </motion.div>
+  );
+}
+
 
 const Preloader = ({ ready }: { ready: boolean }) => (
   <motion.div
@@ -423,7 +496,7 @@ export default function Portfolio() {
 
   const [showAllProjects, setShowAllProjects] = React.useState(false);
 
-  const navIds = React.useMemo(() => ["projects", "skills", "services", "experience", "contact"], []);
+  const navIds = React.useMemo(() => ["projects", "skills", "experience","how i work", "contact"], []);
   const [activeId, setActiveId] = React.useState<string>("");
 
   const scrollToId = React.useCallback((id: string) => {
@@ -805,38 +878,6 @@ export default function Portfolio() {
         </div>
       </Section>
 
-      <Section id="services" title="Services">
-        <div className="grid gap-6 sm:grid-cols-3">
-          {[
-            {
-              h: "Web Development",
-              p: "Custom websites and web apps built with modern frameworks like React, Next.js, and Tailwind CSS.",
-            },
-            {
-              h: "UI/UX & Branding System",
-              p: "End-to-end service from modern UI/UX design to a consistent branding system. Delivering professional websites and apps with a strong and unique brand identity.",
-            },
-            {
-              h: "API & Backend Development",
-              p: "Robust REST or GraphQL APIs, database design, and secure server-side integrations.",
-            },
-          ].map((s) => (
-            <motion.div
-              key={s.h}
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.45 }}
-            >
-              <Card>
-                <h3 className="font-medium">{s.h}</h3>
-                <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{s.p}</p>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      </Section>
-
       <Section id="experience" title="Experience">
         <div className="space-y-6">
           {experiences.map((e, idx) => (
@@ -862,6 +903,46 @@ export default function Portfolio() {
                 </ul>
               </Card>
             </motion.div>
+          ))}
+        </div>
+      </Section>
+
+      <Section id="how-i-work" title="No Bullshit, Just Work.">
+        <div className="relative max-w-5xl space-y-12">
+          {(
+            [
+              {
+                q: "How do you usually approach a project?",
+                a: "First thing I do is ask uncomfortable questions. If the goal isn’t clear, I don’t touch the code yet. Writing code for a bad idea is just faster failure.",
+                side: "left",
+              },
+              {
+                q: "What kind of projects do you enjoy working on?",
+                a: "Projects where people actually care about quality. If the mindset is “as long as it works”, I already know it’s going to be painful.",
+                side: "right",
+              },
+              {
+                q: "How do you deal with messy or legacy code?",
+                a: "I don’t romanticize it. I clean it piece by piece. No rewrites for ego, no hacks for speed. Just steady improvement until it stops being a nightmare.",
+                side: "left",
+              },
+              {
+                q: "What’s your biggest strength as a developer?",
+                a: "I can tell the difference between complexity and stupidity. Not everything needs to be clever, most things just need to be clear.",
+                side: "right",
+              },
+              {
+                q: "What do you expect from a team or client?",
+                a: "Honesty. If something doesn’t make sense, I want to say it out loud. I’d rather have an awkward conversation now than a broken product later.",
+                side: "left",
+              },
+            ] as const
+          ).map((item, i) => (
+            <ConversationBubbleStable
+              key={i}
+              item={item}
+              index={i}
+            />
           ))}
         </div>
       </Section>
